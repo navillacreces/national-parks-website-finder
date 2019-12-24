@@ -1,34 +1,44 @@
-
 const myApiKey = "";
 
 const searchURLBase = "https://developer.nps.gov/api/v1/parks";
+
 
 function watchForm() {
   $('#js-form').submit(event => {
     event.preventDefault();
     
-    const value = $('option:selected').val();
+    const state1 = $('#drop-down1 option:selected').val();
+    const state2 = $('#drop-down2 option:selected').val();
+    const state3 = $('#drop-down3 option:selected').val();
     const maxResults = $('#js-max-results').val();
     
-    callParkAPI(value, maxResults);
+    callParkAPI(state1,state2,state3,maxResults);
   });
 }
 
-function callParkAPI(state,numOfResults){
+function callParkAPI(state1,state2,state3,numOfResults){
+
+
+  if (state2 !== "" && state3 !== ""){
+    state1 = state1 + "," + state2 + "," + state3;
+  } else if (state2 !== ""){
+    state1 = state1 + "," + state2;
+  }
 
   const myKeyObj = {
     
-    stateCode : state,
+    stateCode : state1,
     limit: numOfResults,
     api_key : myApiKey,
-
+    
   };
+
 
   const theQueryString = formatQueryParams(myKeyObj);
 
   const url = searchURLBase + '?' + theQueryString;
+  console.log(url);
   
-
   fetch(url)
     .then(response => {
       if (response.ok) {
@@ -40,7 +50,7 @@ function callParkAPI(state,numOfResults){
     .catch(err => {
       $('#js-error-message').text(`Something went wrong: ${err.message}`);
     });
-
+  
 }
 
 function displayResults(responseJsonObj){
@@ -58,7 +68,7 @@ function displayResults(responseJsonObj){
    </li>`);
   }
 
-
+  
 }
 
 function formatQueryParams(params) {
